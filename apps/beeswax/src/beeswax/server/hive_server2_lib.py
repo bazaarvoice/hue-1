@@ -108,7 +108,7 @@ class HiveServerTable(Table):
   @property
   def cols(self):
     rows = self.describe
-    col_row_index = 2
+    col_row_index = 1
     try:
       end_cols_index = map(itemgetter('col_name'), rows[col_row_index:]).index('')
       return rows[col_row_index:][:end_cols_index] + self._get_partition_column()
