@@ -67,8 +67,6 @@
   </script>
   <!-- End SessionStack Code -->
 
-  ${ commonHeaderFooterComponents.header_i18n_redirection(user, is_s3_enabled, apps) }
-
   <script type="text/javascript">
     var IS_HUE_4 = true;
   </script>
