@@ -131,8 +131,9 @@ def login(request,
     oq_cache = OutstandingQueriesCache(request.session)
     oq_cache.set(session_id, came_from)
 
-    logger.debug('Redirecting the user to the IdP')
-    return HttpResponseRedirect(get_location(result))
+    logger.debug('Redirecting the user to the IdP using HTML rendered iframe top-window redirection')
+    html = "<html><body>Authenticating ... <script type='application/javascript'>window.top.location.href='%s';</script></body></html>" % get_location(result)
+    return HttpResponse(html)
 
 
 @require_POST
