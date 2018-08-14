@@ -319,7 +319,7 @@ from metadata.conf import has_optimizer, OPTIMIZER
           'display': 'none'
         });
 
-        location.href = 'https://portal.bazaarvoice.com/analytics/explorer';
+        location.href = 'https://qa.portal.bazaarvoice.com/analytics/explorer';
       } else {
         $(".security-check").css({
           'display': 'none'
