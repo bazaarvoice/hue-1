@@ -509,39 +509,9 @@ from desktop.views import _ko
         self.onePageViewModel = params.onePageViewModel;
 
         var lastYarnBrowserRequest = null;
-        var checkYarnBrowserStatus = function() {
-          return $.post("/jobbrowser/jobs/", {
-              "format": "json",
-              "state": "running",
-              "user": "${user.username}"
-            },
-            function(data) {
-              if (data != null && data.jobs != null) {
-                huePubSub.publish('jobbrowser.data', data.jobs);
-                self.jobCounts()['yarn'] = data.jobs.length;
-                self.jobCounts.valueHasMutated();
-              }
-          })
-        };
+        var checkYarnBrowserStatus = function() {};
         var lastScheduleBrowserRequest = null;
-        var checkScheduleBrowserStatus = function() {
-          return $.post("/jobbrowser/api/jobs", {
-              interface: ko.mapping.toJSON("schedules"),
-              filters: ko.mapping.toJSON([
-                  {"text": "user:${user.username}"},
-                  {"time": {"time_value": 7, "time_unit": "days"}},
-                  {"states": ["running"]},
-                  {"pagination": {"page": 1, "offset": 1, "limit": 1}}
-              ])
-            },
-            function(data) {
-              if (data != null && data.total != null) {
-                huePubSub.publish('jobbrowser.schedule.data', data.apps);
-                self.jobCounts()['schedules'] = data.total;
-                self.jobCounts.valueHasMutated();
-              }
-          })
-        };
+        var checkScheduleBrowserStatus = function() {};
 
         var checkJobBrowserStatus = function() {
           lastYarnBrowserRequest = checkYarnBrowserStatus();
@@ -555,20 +525,6 @@ from desktop.views import _ko
             window.clearTimeout(checkJobBrowserStatusIdx);
           });
         };
-
-
-        // Load the mini jobbrowser
-        $.ajax({
-          url: '/jobbrowser/apps?is_embeddable=true&is_mini=true',
-          beforeSend: function (xhr) {
-            xhr.setRequestHeader('X-Requested-With', 'Hue');
-          },
-          dataType: 'html',
-          success: function (response) {
-            var r = params.onePageViewModel.processHeaders(response);
-            $('#mini_jobbrowser').html(r);
-          }
-        });
 
         var checkJobBrowserStatusIdx = window.setTimeout(checkJobBrowserStatus, 10);
 
