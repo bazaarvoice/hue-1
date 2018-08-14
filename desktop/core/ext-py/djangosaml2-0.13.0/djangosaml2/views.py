@@ -131,8 +131,60 @@ def login(request,
     oq_cache = OutstandingQueriesCache(request.session)
     oq_cache.set(session_id, came_from)
 
-    logger.debug('Redirecting the user to the IdP using HTML rendered iframe top-window redirection')
-    html = "<html><body>Authenticating ... <script type='application/javascript'>window.top.location.href='%s';</script></body></html>" % get_location(result)
+    logger.debug('Redirecting the user to the IdP using HTML rendered iframe top-window redirection via user-triggered action')
+    html = "<html>" \
+           "<head>" \
+           "<style>" \
+           "body {" \
+           "font: 13.3333px; " \
+           "font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; " \
+           "} " \
+           ".button {" \
+           "display: inline-block; " \
+           "box-sizing: border-box; " \
+           "margin: 0; " \
+           "padding: 10px 24px; " \
+           "text-rendering: auto; " \
+           "text-align: center; " \
+           "text-transform: none; " \
+           "text-decoration: none; " \
+           "text-indent: 0; " \
+           "text-shadow: none; " \
+           "letter-spacing: normal; " \
+           "word-spacing: normal; " \
+           "color: buttontext; " \
+           "border: 2px outset buttonface; " \
+           "border-image: initial; " \
+           "background-color: buttonface; " \
+           "-webkit-appearance: button; " \
+           "-moz-appearance: button; " \
+           "appearance: button; " \
+           "cursor: pointer;" \
+           "} " \
+           "@-webkit-keyframes glow { " \
+           "to { border-color: #69c800; -webkit-box-shadow: 0 0 10px #69c800; -moz-box-shadow: 0 0 10px #69c800; box-shadow: 0 0 10px #69c800; } " \
+           "} " \
+           ".glowing { " \
+           "background-color: #ccc; border: 1px solid transparent; " \
+           "-webkit-animation: glow 1.0s infinite alternate;" \
+           "  -webkit-transition: border 1.0s linear, box-shadow 1.0s linear;" \
+           " -moz-transition: border 1.0s linear, box-shadow 1.0s linear;" \
+           " transition: border 1.0s linear, box-shadow 1.0s linear;" \
+           "} " \
+           ".button:hover { text-decoration: none; background-color: white; border-color: white; color: black; } " \
+           ".middle {" \
+           "margin: auto; " \
+           "padding: 150px 0 0 0; " \
+           "width: 350; " \
+           "height: 200px; " \
+           "text-align: center;" \
+           "}" \
+           "</style>" \
+           "<script type='text/javascript'>if (self == top) { location.href = '%s' } else { parent.postMessage('user-logged-in', '*') }</script>" \
+           "</head>" \
+           "<body><div class='middle'><a href='%s' target='_top' class='button glowing'>Authenticating ... Click here to continue</a></div>" \
+           "</body>" \
+           "</html>" % (get_location(result), get_location(result))
     return HttpResponse(html)
 
 
