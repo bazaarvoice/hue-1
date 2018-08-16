@@ -85,7 +85,7 @@ class Saml2Backend(ModelBackend):
 
         main_attribute = self.clean_user_main_attribute(saml_user)
 
-        user_query_args = {django_user_main_attribute: main_attribute}
+        user_query_args = {django_user_main_attribute: main_attribute, 'email': main_attribute}
 
         # Note that this could be accomplished in one try-except clause, but
         # instead we use get_or_create when creating unknown users since it has
