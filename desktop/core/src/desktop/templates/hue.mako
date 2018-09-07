@@ -145,7 +145,7 @@ ${ hueIcons.symbols() }
     <div class="top-nav-left">
       <ul class="top-secondary-nav" style="padding-left: 100px;">
         <li><a href="/hue/editor?type=hive" onclick="parent.postMessage({type: 'url-clicked', data: {url: '/editor?type=hive', prefix: '/hue'}}, '*')">Editor</a></li>
-        <li><a href="/hue/home" onclick="parent.postMessage({type: 'url-clicked', data: {url: '/home', prefix: '/hue'}}, '*')">Documents</a></li>
+        <li><a href="/hue/home" onclick="parent.postMessage({type: 'url-clicked', data: {url: '/home', prefix: '/hue'}}, '*')">Notebooks</a></li>
         <li><a href="/hue/metastore/tables" onclick="parent.postMessage({type: 'url-clicked', data: {url: '/metastore/tables', prefix: '/hue'}}, '*')">Tables</a></li>
         <li><a href="https://bits.bazaarvoice.com/confluence/pages/viewpage.action?pageId=83472698" target="_blank">Getting Started</a></li>
       </ul>
