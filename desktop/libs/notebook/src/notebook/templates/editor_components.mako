@@ -193,49 +193,16 @@ ${ sqlSyntaxDropdown.sqlSyntaxDropdown() }
         <!-- ko template: { ifnot: editorMode, name: 'notebook-actions' }--><!-- /ko -->
 
         <div class="dropdown pull-right margin-left-10">
-          <a class="btn" data-toggle="dropdown" href="javascript: void(0)">
-            <i class="fa fa-fw fa-ellipsis-v"></i>
+          <!-- ko if: $root.canSave -->
+          <a class="btn" data-bind="click: prepareShareModal, css: {'isShared': isShared()}">
+            <i class="fa fa-fw fa-users"></i>
           </a>
-          <ul class="dropdown-menu">
-            <!-- ko if: $root.canSave -->
-            <li>
-              <a class="share-link" data-bind="click: prepareShareModal,
-                css: {'isShared': isShared()}">
-                <i class="fa fa-fw fa-users"></i> ${ _('Share') }
-              </a>
-            </li>
-            <!-- /ko -->
-            <li>
-              <a class="pointer" data-bind="css: {'active': $root.isContextPanelVisible }, click: function() { $root.isContextPanelVisible(!$root.isContextPanelVisible()); }">
-                <i class="fa fa-fw fa-cogs"></i> ${ _('Session') }
-              </a>
-            </li>
-            <li class="divider"></li>
-            <li>
-            <!-- ko if: editorMode -->
-              <a href="javascript:void(0)" data-bind="click: function() { newNotebook($root.editorType(), null, selectedNotebook() ? $root.selectedNotebook().snippets()[0].currentQueryTab() : null); }, attr: { 'title': '${ _('New ') }' +  editorTypeTitle() + '${ _(' Query') }' }">
-                <i class="fa fa-fw fa-file-o"></i> ${ _('New') }
-              </a>
-            <!-- /ko -->
-            <!-- ko ifnot: editorMode -->
-              <a href="javascript:void(0)" data-bind="click: newNotebook">
-                <i class="fa fa-file-o"></i> ${ _('New Notebook') }
-              </a>
-            <!-- /ko -->
-            </li>
-            <li>
-              <!-- ko if: IS_HUE_4 -->
-              <a data-bind="hueLink: '/home/?type=' + (editorMode() ? 'query-' : '') + editorType()">
-                <svg class="hi hi-fw hi-bigger"><use xlink:href="#hi-documents"></use></svg> <span data-bind="text: editorMode() ? '${ _ko('Queries') }' : '${ _ko('Notebooks') }'"></span>
-              </a>
-              <!-- /ko -->
-              <!-- ko ifnot: IS_HUE_4 -->
-              <a class="btn" data-bind="hueLink: '${ url('notebook:notebooks') }?type=' + editorType()">
-                <svg class="hi hi-fw hi-bigger"><use xlink:href="#hi-documents"></use></svg> <span data-bind="text: editorMode() ? '${ _ko('Queries') }' : '${ _ko('Notebooks') }'"></span>
-              </a>
-              <!-- /ko -->
-            </li>
-          </ul>
+          <!-- /ko -->
+          <!-- ko if: editorMode -->
+          <a class="btn" href="javascript:void(0)" data-bind="click: function() { newNotebook($root.editorType(), null, selectedNotebook() ? $root.selectedNotebook().snippets()[0].currentQueryTab() : null); }, attr: { 'title': '${ _('New ') }' +  editorTypeTitle() + '${ _(' Query') }' }">
+            <i class="fa fa-fw fa-file-o"></i>
+          </a>
+          <!-- /ko -->
         </div>
       </div>
 
@@ -892,7 +859,6 @@ ${ sqlSyntaxDropdown.sqlSyntaxDropdown() }
 
    <!-- ko template: { name: 'snippet-header-statement-type${ suffix }' } --><!-- /ko -->
 
-    <a class="inactive-action margin-left-10" href="javascript:void(0)" data-bind="toggle: settingsVisible, visible: hasProperties, css: { 'blue' : settingsVisible }" title="${ _('Query settings') }"><i class="fa fa-cog"></i></a>
     <a class="inactive-action margin-left-10 pointer" title="${ _('Show editor shortcuts') }" data-toggle="modal" data-target="#helpModal${ suffix }"><i class="fa fa-question"></i></a>
   </div>
 </script>
