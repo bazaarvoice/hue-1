@@ -104,7 +104,7 @@ from desktop.views import _ko
           <!-- ko if: typeof $data.divider !== 'undefined' && $data.divider -->
           <li class="divider"></li>
           <!-- /ko -->
-          <!-- ko if: typeof $data.divider === 'undefined' || !$data.divider -->
+          <!-- ko if: (typeof $data.divider === 'undefined' || !$data.divider) && ($data.label === 'Notebook' || $data.label === 'All' || $data.label === 'Directory' || $data.label === 'Hive Query') -->
           <li><a href="javascript:void(0)" data-bind="text: typeof $data.label !== 'undefined' ? $data.label : $data, click: function () { $parent.value($data); }"></a></li>
           <!-- /ko -->
         </ul>
