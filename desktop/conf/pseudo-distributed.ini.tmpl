@@ -1902,3 +1902,17 @@
 
     # If metadata search is enabled, also show the search box in the left assist.
     ## enable_file_search=false
+
+  [[raven]]
+    # Number of seconds until the meta data search assets get refreshed from Raven Rest API
+    refresh_rate=300
+    # Policy ids to filter on Ranger policies
+    meta_data_search_access_policy_ids='[1,2,3]'
+    # Ranger host
+    ranger_host=127.0.0.1
+    # Ranger port
+    ranger_port=6080
+    # Username for authenticating Ranger REST API
+    ranger_username=
+    # Password for authenticating Ranger REST API
+    ranger_password=
