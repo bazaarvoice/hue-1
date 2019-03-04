@@ -112,3 +112,9 @@ junitresults*
 
 # Generated js bundles
 desktop/core/src/desktop/static/desktop/js/bundles/
+
+# Locally installed dependencies
+desktop/core/ext-py/cryptography-2.1.4/
+
+# Generated data
+data

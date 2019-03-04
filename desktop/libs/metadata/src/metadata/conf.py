@@ -14,7 +14,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import json
 import logging
 
 from subprocess import CalledProcessError
@@ -362,6 +362,53 @@ NAVIGATOR = ConfigSection(
   )
 )
 
+def get_raven_refresh_rate():
+  return RAVEN.REFRESHRATE.get()
+
+def get_raven_ranger_policy_ids():
+  policy_ids = RAVEN.RANGERACCESSPOLICYIDS.get()
+  return json.loads(policy_ids)
+
+def get_raven_ranger_host():
+  return RAVEN.RANGERHOST.get()
+
+def get_raven_ranger_port():
+  return RAVEN.RANGERPORT.get()
+
+def get_raven_ranger_username():
+  return RAVEN.RANGERUSERNAME.get()
+
+def get_raven_ranger_password():
+  return RAVEN.RANGERPASSWORD.get()
+
+RAVEN = ConfigSection(
+  key='raven',
+  help="""Configuration options for Meta Data Search powered by Raven API""",
+  members=dict(
+    REFRESHRATE = Config(
+      key='refresh_rate',
+      type=int,
+      default=300),
+    RANGERACCESSPOLICYIDS = Config(
+      key='meta_data_search_access_policy_ids',
+      type=str,
+      default=''),
+    RANGERHOST = Config(
+      key='ranger_host',
+      type=str,
+      default='127.0.0.1'),
+    RANGERPORT = Config(
+      key='ranger_port',
+      type=int, default=0),
+    RANGERUSERNAME = Config(
+      key='ranger_username',
+      type=str,
+      default=''),
+    RANGERPASSWORD = Config(
+      key='ranger_password',
+      type=str,
+      default='')
+  ))
 
 MANAGER = ConfigSection(
   key='manager',
