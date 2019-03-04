@@ -158,7 +158,7 @@ def execute_query(request, design_id=None):
       try:
         db.use(form.cleaned_data['database'])
         datatable = db.execute_and_wait(query)
-        results = db.client.create_result(datatable)
+        results = db.client.create_entity(datatable)
 
         response['status'] = 0
         response['results'] = results_to_dict(results)
@@ -197,7 +197,7 @@ def explain_query(request):
       try:
         db.use(form.cleaned_data['database'])
         datatable = db.explain(query)
-        results = db.client.create_result(datatable)
+        results = db.client.create_entity(datatable)
 
         response['status'] = 0
         response['results'] = results_to_dict(results)
@@ -244,7 +244,7 @@ def fetch_results(request, id, first_row=0):
     database = design.query.get('database', 'default')
     db.use(database)
     datatable = db.execute_and_wait(design)
-    results = db.client.create_result(datatable)
+    results = db.client.create_entity(datatable)
     status = 0
   except Exception, e:
     fetch_error = True
