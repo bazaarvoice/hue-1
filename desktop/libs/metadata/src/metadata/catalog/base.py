@@ -22,13 +22,13 @@ from desktop.lib.i18n import smart_unicode
 
 
 def get_api(request, interface):
-
+  interface = 'raven'
   if interface == 'navigator':
     from metadata.catalog.navigator_client import NavigatorApi
     return NavigatorApi(user=request.user)
-  elif interface == 'dummy':
-    from metadata.catalog.dummy_client import DummyApi
-    return DummyApi(user=request.user)
+  elif interface == 'raven':
+    from metadata.catalog.raven_client import RavenApi
+    return RavenApi(user=request.user)
   else:
     raise PopupException(_('Catalog connector interface not recognized: %s') % interface)
 
