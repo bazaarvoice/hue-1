@@ -41,56 +41,37 @@ class RavenApi(Api):
         u'totalMatched': 0
   }
 
-  base_table_entity = {
-      DESCRIPTION: None,
-      ORIGINAL_DESCRIPTION: None,
-      ORIGINAL_NAME: None,
-      PARENT_PATH: None,
-      TAGS: None,
-      TYPE: TABLE_TYPE,
-      u'clusteredByColNames': None,
-      u'customProperties': {},
-      u'extractorRunId': None,
-      u'fileSystemPath': None,
-      u'firstClassParentId': None,
-      u'internalType': u'hv_table',
-      u'metaClassName': u'hv_table',
-      u'name': None,
-      u'owner': None,
-      u'packageName': None,
-      u'partColNames': None,
-      u'properties': {},
-      u'sortByColNames': None,
-      u'sourceId': None,
-      u'sourceType': u'HIVE',
-      u'technicalProperties': None,
-      u'userEntity': False
-  }
-
-  base_col_entity = {
-      DATA_TYPE: None,
-      DESCRIPTION: None,
-      ORIGINAL_DESCRIPTION: None,
-      ORIGINAL_NAME: None,
-      PARENT_PATH: None,
-      TAGS: None,
-      TYPE: FIELD_TYPE,
-      u'customProperties': None,
-      u'extractorRunId': None,
-      u'firstClassParentId': None,
-      u'identity': None,
-      u'internalType': u'hv_column',
-      u'metaClassName': u'hv_column',
-      u'name': None,
-      u'packageName': None,
-      u'properties': {},
-      u'sourceId': None,
-      u'sourceType': u'HIVE',
-      u'technicalProperties': None,
-      u'userEntity': False}
+  @staticmethod
+  def get_base_entity(type):
+    e = {
+          DESCRIPTION: None,
+          ORIGINAL_DESCRIPTION: None,
+          NAME: None,
+          ORIGINAL_NAME: None,
+          PARENT_PATH: None,
+          INTERNAL_TYPE: None,
+          TAGS: [],
+          TYPE: None,
+          DATA_TYPE: None
+      }
+    if type == 'database':
+        e[TYPE] = DATABASE_TYPE
+        e[INTERNAL_TYPE] = e[META_CLASS_NAME] = I_DATABASE
+    elif type == 'table':
+        e[TYPE] = TABLE_TYPE
+        e[INTERNAL_TYPE] = e[META_CLASS_NAME] = I_TABLE
+    elif type == 'view':
+        e[TYPE] = VIEW_TYPE
+        e[INTERNAL_TYPE] = e[META_CLASS_NAME] = I_VIEW
+    elif type == 'column':
+        e[TYPE] = FIELD_TYPE
+        e[INTERNAL_TYPE] = e[META_CLASS_NAME] = I_FIELD
+    else:
+        return None
+    return e
 
   highlight_map_value = {
-      HIGHLIGHT_INTERNAL_TYPE: [],
+      INTERNAL_TYPE: [],
       ORIGINAL_NAME: [],
       TYPE: [],
       u'sourceType': [u'<em>HIVE</em>'],
@@ -124,10 +105,10 @@ class RavenApi(Api):
       h = copy.deepcopy(self.highlight_map_value)
       h[ORIGINAL_NAME].append(unicode(originalName))
       if type == 'column':
-          h[HIGHLIGHT_INTERNAL_TYPE].append(HIGHLIGHT_TYPE_HV_FIELD)
+          h[INTERNAL_TYPE].append(HIGHLIGHT_TYPE_HV_FIELD)
           h[TYPE].append(HIGHLIGHT_TYPE_FIELD)
       elif type == 'table':
-          h[HIGHLIGHT_INTERNAL_TYPE].append(HIGHLIGHT_TYPE_HV_TABLE)
+          h[INTERNAL_TYPE].append(HIGHLIGHT_TYPE_HV_TABLE)
           h[TYPE].append(HIGHLIGHT_TYPE_TABLE)
       return h
 
@@ -140,10 +121,12 @@ class RavenApi(Api):
       description = base_map['tableContext']['table']['description']
       parent_path = "%s_%s_%s" % (universe, catalog, namespace)
       if type == 'table':
-          payload = copy.deepcopy(self.base_table_entity)
+          # payload = copy.deepcopy(self.base_table_entity)
+          payload = RavenApi.get_base_entity('table')
           name = base_map['tableContext']['table']['name']
       elif type == 'column':
-          payload = copy.deepcopy(self.base_col_entity)
+          # payload = copy.deepcopy(self.base_col_entity)
+          payload = RavenApi.get_base_entity('column')
           payload['dataType'] = unicode(col_type.lower())
           name = "%s.%s" % (base_map['tableContext']['table']['name'], col_name)
       catalog_map_key = "%s_%s" % (universe, catalog)
@@ -164,7 +147,7 @@ class RavenApi(Api):
       highlight_payload = {}
       # regex search on tables()
       table_sql = "SELECT data FROM tables WHERE data->'tableContext'->'table'->>'name' ilike '%%%s%%' limit %s;" % (
-      query_s[1:], limit)
+      query_s, limit)
       cur.execute(table_sql)
       for elem in cur.fetchall():
           base_map = elem[0]
@@ -181,7 +164,7 @@ class RavenApi(Api):
       highlight_payload = {}
       # regex search on columns
       col_sql = "SELECT t.data, cols->>'name' AS name, cols->'descriptor'->>'type' AS type FROM tables t, jsonb_array_elements(t.data->'tableContext'->'table'->'schema'->'attributes') cols WHERE cols->>'name' LIKE '%%%s%%' limit %s;" % (
-      query_s[1:], limit)
+      query_s, limit)
       cur.execute(col_sql)
       for elem in cur.fetchall():
           base_map = elem[0]
@@ -197,6 +180,13 @@ class RavenApi(Api):
       return entities_payload, highlight_payload
 
   def search_entities_interactive(self, query_s=None, limit=100, **filters):
+    facet = None
+    if ':' in query_s:
+        pvt = query_s.find(':')
+        facet = query_s[:query_s.find(':')]
+        query_s = query_s[pvt+1:]
+    else:
+        query_s = query_s[1:]
     payload = copy.deepcopy(self.base_map)
     payload['limit'] = limit
     cur = None
@@ -208,12 +198,21 @@ class RavenApi(Api):
         if 'facetFields' in filters and 'tags' in filters['facetFields']:
             payload['facets']['tags'] = self.tags.keys()
         else:
-            table_tuple = self.get_table_entities(cur, query_s, limit)
-            payload['results'].extend(table_tuple[0])
-            payload['highlighting'].update(table_tuple[1])
-            column_tuple = self.get_col_entities(cur, query_s, limit)
-            payload['results'].extend(column_tuple[0])
-            payload['highlighting'].update(column_tuple[1])
+            if not facet:
+                table_tuple = self.get_table_entities(cur, query_s, limit)
+                payload['results'].extend(table_tuple[0])
+                payload['highlighting'].update(table_tuple[1])
+                column_tuple = self.get_col_entities(cur, query_s, limit)
+                payload['results'].extend(column_tuple[0])
+                payload['highlighting'].update(column_tuple[1])
+            elif facet == 'column':
+                column_tuple = self.get_col_entities(cur, query_s, limit)
+                payload['results'].extend(column_tuple[0])
+                payload['highlighting'].update(column_tuple[1])
+            elif facet == 'table':
+                table_tuple = self.get_table_entities(cur, query_s, limit)
+                payload['results'].extend(table_tuple[0])
+                payload['highlighting'].update(table_tuple[1])
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
     finally:
