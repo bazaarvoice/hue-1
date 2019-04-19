@@ -99,6 +99,19 @@
   <link rel="stylesheet" href="${ static('desktop/ext/css/nv.d3.min.css') }">
   <link rel="stylesheet" href="${ static('desktop/css/nv.d3.css') }">
 
+  <!-- Begin SessionStack code -->
+  <script type="text/javascript">
+  !function(a,b){var c=window;c.SessionStack=a,c[a]=c[a]||function(){
+  c[a].q=c[a].q||[],c[a].q.push(arguments)},c[a].t=b;var d=document.createElement("script");
+  d.async=1,d.src="https://cdn.sessionstack.com/sessionstack.js";
+  var e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(d,e);
+  }("sessionstack", {
+     "token": "e373b55c6a5348c7ab4c328f6cff713d",
+     "isIframe": true
+  });
+  </script>
+  <!-- End SessionStack Code -->
+
   <script type="text/javascript">
 % if IS_EMBEDDED.get():
   // Bootstrap 2.3.2 relies on the hide css class presence for modals but doesn't remove it when opened for fade type
@@ -140,6 +153,30 @@
   % if not conf.DEV.get():
   <script src="${ static('desktop/js/hue.errorcatcher.js') }"></script>
   % endif
+  <style>
+      ul.top-secondary-nav li {
+        display: inline-block;
+        padding: 0 15px;
+        margin: 10px 0 0 0;
+      }
+
+      ul.top-secondary-nav a {
+        color: #222;
+      }
+
+      ul.top-secondary-nav a:focus, ul.top-secondary-nav a:hover {
+        font-weight: bold;
+        color: #0B7FAD;
+      }
+
+      .navbar-default {
+        border-top: none !important;
+      }
+
+      .top-nav-right {
+        display: none;
+      }
+  </style>
 </head>
 
 <body>
@@ -180,73 +217,26 @@ ${ hueIcons.symbols() }
 <input style="display:none" readonly autocomplete="false" type="text" name="fakeusernameremembered"/>
 <input style="display:none" readonly autocomplete="false" type="password" name="fakepasswordremembered"/>
 
-<div class="main-page">
+<div class="security-check">Security check, please wait ...</div>
+<div class="main-page" style="display:none">
   % if banner_message or conf.CUSTOM.BANNER_TOP_HTML.get():
     <div class="banner">
       ${ banner_message or conf.CUSTOM.BANNER_TOP_HTML.get() | n,unicode }
     </div>
   % endif
+  <nav class="navbar navbar-default" style="border-bottom: 1px solid #DCDCDC;">
+    <div class="top-nav-left">
+      <ul class="top-secondary-nav" style="padding-left: 100px;">
+        <li><a href="/hue/editor?type=hive" onclick="parent.postMessage({type: 'url-clicked', data: {url: '/editor?type=hive', prefix: '/hue'}}, '*')">Editor</a></li>
+        <li><a href="/hue/home" onclick="parent.postMessage({type: 'url-clicked', data: {url: '/home', prefix: '/hue'}}, '*')">Notebooks</a></li>
+        <li><a href="/hue/metastore/tables" onclick="parent.postMessage({type: 'url-clicked', data: {url: '/metastore/tables', prefix: '/hue'}}, '*')">Tables</a></li>
+        <li><a href="https://bits.bazaarvoice.com/confluence/pages/viewpage.action?pageId=83472698" target="_blank">Getting Started</a></li>
+      </ul>
+    </div>
+  </nav>
   % if not IS_EMBEDDED.get():
   <nav class="navbar navbar-default">
     <div class="navbar-inner top-nav">
-      <div class="top-nav-left">
-        % if not IS_EMBEDDED.get():
-        % if not (IS_MULTICLUSTER_ONLY.get() and has_multi_cluster()):
-        <a class="hamburger hamburger-hue pull-left" data-bind="toggle: leftNavVisible, css: { 'is-active': leftNavVisible }">
-          <span class="hamburger-box"><span class="hamburger-inner"></span></span>
-        </a>
-
-        <a class="brand" data-bind="hueLink: '/home/'" href="javascript: void(0);" title="${_('Documents')}">
-            <svg style="height: 24px; width: 120px;"><use xlink:href="#hi-logo"></use></svg>
-        </a>
-        % endif
-
-        % endif
-
-        % if not IS_MULTICLUSTER_ONLY.get():
-        <div class="btn-group" data-bind="visible: true" style="display:none; margin-top: 8px">
-          <!-- ko if: mainQuickCreateAction -->
-          <!-- ko with: mainQuickCreateAction -->
-          <a class="btn btn-primary disable-feedback hue-main-create-btn" data-bind="hueLink: url, attr: {title: tooltip}, style: { borderBottomRightRadius: $parent.quickCreateActions().length > 1 ? '0px' : '4px', borderTopRightRadius: $parent.quickCreateActions().length > 1 ? '0px' : '4px' }">
-            <span data-bind="text: displayName"></span>
-          </a>
-          <!-- /ko -->
-          <!-- /ko -->
-          <button class="btn btn-primary dropdown-toggle hue-main-create-btn-dropdown" data-toggle="dropdown" data-bind="visible: quickCreateActions().length > 1 || (quickCreateActions().length == 1 && quickCreateActions()[0].children && quickCreateActions()[0].children.length > 1)">
-            <!-- ko ifnot: mainQuickCreateAction -->${ _('More') } <!-- /ko -->
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu hue-main-create-dropdown" data-bind="foreach: { data: quickCreateActions, as: 'item' }">
-            <!-- ko template: 'quick-create-item-template' --><!-- /ko -->
-          </ul>
-        </div>
-        % endif
-
-        <script type="text/html" id="quick-create-item-template">
-          <!-- ko if: item.dividerAbove -->
-          <li class="divider"></li>
-          <!-- /ko -->
-          <li data-bind="css: { 'dropdown-submenu': item.isCategory && item.children.length > 1 }">
-            <!-- ko if: item.url -->
-              <a href="javascript: void(0);" data-bind="hueLink: item.url">
-                <!-- ko if: item.icon -->
-                <!-- ko template: { name: 'app-icon-template', data: item } --><!-- /ko -->
-                <!-- /ko -->
-                <span data-bind="css: { 'dropdown-no-icon': !item.icon }, text: item.displayName"></span>
-              </a>
-            <!-- /ko -->
-            <!-- ko if: item.href -->
-              <a data-bind="attr: { href: item.href }, text: item.displayName" target="_blank"></a>
-            <!-- /ko -->
-            <!-- ko if: item.isCategory && item.children.length > 1 -->
-            <ul class="dropdown-menu" data-bind="foreach: { data: item.children, as: 'item' }">
-              <!-- ko template: 'quick-create-item-template' --><!-- /ko -->
-            </ul>
-            <!-- /ko -->
-          </li>
-        </script>
-      </div>
-
 
       <div class="top-nav-middle">
         <div class="search-container-top" data-bind="component: 'hue-global-search'"></div>

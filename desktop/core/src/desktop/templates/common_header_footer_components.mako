@@ -110,16 +110,29 @@ from metadata.conf import has_optimizer, OPTIMIZER
         $.ajaxSetup({ cache: false });
       }
 
-      // prevents framebusting and clickjacking
-      if (self == top){
+      // okta in iframe redirection to login
+      if (self == top) {
+        //same origin.. hide the body and display a load spinner if possible
+        $("body").css({
+          'display': 'none'
+        });
+
+        location.href = 'https://qa.portal.bazaarvoice.com/analytics/explorer';
+      } else {
+        $(".security-check").css({
+          'display': 'none'
+        });
+
         $("body").css({
           'display': 'block',
           'visibility': 'visible'
         });
+
+        $(".main-page").removeAttr("style");
       }
-      else {
-        top.location = self.location;
-      }
+
+      // notify parent that the user has been logged in
+      parent.postMessage("user-logged-in", "*");
 
       %if conf.AUTH.IDLE_SESSION_TIMEOUT.get() > -1 and not skip_idle_timeout:
       IDLE_SESSION_TIMEOUT = ${conf.AUTH.IDLE_SESSION_TIMEOUT.get()};

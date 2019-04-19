@@ -1225,8 +1225,6 @@ class Document2(models.Model):
 
     super(Document2, self).save(*args, **kwargs)
 
-    # Inherit shared permissions from parent directory, must be done after save b/c new doc needs ID
-    self.inherit_permissions()
 
   def validate(self):
     # Validate home and Trash directories are only created once per user and cannot be created or modified after
