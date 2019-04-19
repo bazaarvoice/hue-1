@@ -33,7 +33,11 @@ const TEMPLATE = `
         <i class="inline-autocomp-magnify-icon fa fa-fw fa-spinner fa-spin"></i>
         <!-- /ko -->
       <!-- /ko-->
-      <input class="inline-autocomp-input" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" data-bind="
+      <input class="inline-autocomp-input"
+        readonly onfocus="this.removeAttribute('readonly');"
+        autocomplete="new-search" type="search" value=""
+        autocorrect="off" autocapitalize="off" spellcheck="false"
+        data-bind="
         attr: { 'placeHolder' : hasFocus() ? '' : placeHolder },
         textInput: searchInput,
         hasFocus: hasFocus,
