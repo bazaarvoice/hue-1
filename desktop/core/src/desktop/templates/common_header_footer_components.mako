@@ -117,7 +117,7 @@ from metadata.conf import has_optimizer, OPTIMIZER
           'display': 'none'
         });
 
-        location.href = 'https://qa.portal.bazaarvoice.com/analytics/explorer';
+        location.href = '${conf.AUTH.PORTAL_UI_URL.get()}';
       } else {
         $(".security-check").css({
           'display': 'none'
