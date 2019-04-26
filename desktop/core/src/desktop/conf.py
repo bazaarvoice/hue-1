@@ -1408,6 +1408,13 @@ OIDC = ConfigSection(
       default="preferred_username"
     ),
 
+    OIDC_RP_SCOPES=Config(
+      key="oidc_rp_scopes",
+      help=_("A space-separated list of scopes when making an authorization request."),
+      type=str,
+      default="openid email"
+    ),
+
     SUPERUSER_GROUP=Config(
       key="superuser_group",
       help=_("The group of users will be created and updated as superuser."),

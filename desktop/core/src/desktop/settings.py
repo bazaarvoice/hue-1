@@ -486,7 +486,7 @@ if is_oidc_configured():
   if 'desktop.auth.backend.AllowFirstUserDjangoBackend' not in AUTHENTICATION_BACKENDS:
     # when multi-backend auth, standard login URL '/hue/accounts/login' is used.
     LOGIN_URL = '/oidc/authenticate/'
-  SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+  SESSION_EXPIRE_AT_BROWSER_CLOSE = False
   MIDDLEWARE_CLASSES.append('mozilla_django_oidc.middleware.SessionRefresh')
   OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 15 * 60
   OIDC_RP_SIGN_ALGO = 'RS256'
@@ -506,6 +506,7 @@ if is_oidc_configured():
   OIDC_STORE_REFRESH_TOKEN = True
   OIDC_CREATE_USER = desktop.conf.OIDC.CREATE_USERS_ON_LOGIN.get()
   OIDC_USERNAME_ATTRIBUTE = desktop.conf.OIDC.OIDC_USERNAME_ATTRIBUTE.get()
+  OIDC_RP_SCOPES = desktop.conf.OIDC.OIDC_RP_SCOPES.get()
 
 # OAuth
 OAUTH_AUTHENTICATION='liboauth.backend.OAuthBackend' in AUTHENTICATION_BACKENDS
