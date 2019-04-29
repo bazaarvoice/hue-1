@@ -158,7 +158,7 @@ class Saml2Backend(ModelBackend):
                      main_attribute)
         django_user_main_attribute = self.get_django_user_main_attribute()
         user_query_args = self.get_user_query_args(main_attribute)
-        user_create_defaults = {django_user_main_attribute: main_attribute}
+        user_create_defaults = {django_user_main_attribute: main_attribute, 'email': main_attribute}
 
         User = get_saml_user_model()
         try:
