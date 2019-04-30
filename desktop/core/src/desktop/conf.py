@@ -934,9 +934,8 @@ AUTH = ConfigSection(
                         "desktop.auth.backend.AllowFirstUserDjangoBackend (relies on Django and user manager, after the first login). " +
                         "Multiple Authentication backends are supported by specifying a comma-separated list in order of priority.")),
     PORTAL_UI_URL=Config("portal_ui_url",
-                          "The portal UI URI for Data Explorer to redirect to after authenticating with SSO",
-                          default="https://qa.portal.bazaarvoice.com/analytics/explorer",
-                          help=_("The Bazaarvoice Portal UI URL for direction for Data Explorer application.")),
+                   default="https://qa.portal.bazaarvoice.com/analytics/explorer",
+                   help=_("The portal UI URI for Data Explorer to redirect to after authenticating with SSO")),
     USER_AUGMENTOR=Config("user_augmentor",
                    default="desktop.auth.backend.DefaultUserAugmentor",
                    help=_("Class which defines extra accessor methods for User objects.")),
