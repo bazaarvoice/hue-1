@@ -82,8 +82,9 @@ class OIDCAuthenticationCallbackView(View):
                 return self.login_failure()
 
             if request.GET['state'] != request.session['oidc_state']:
-                msg = 'Session `oidc_state` does not match the OIDC callback state'
-                raise SuspiciousOperation(msg)
+                # session has been refreshed. Just need to redirect again to authenticate
+                portal_ui_url = import_from_settings('PORTAL_UI_URL', '/')
+                return HttpResponseRedirect(portal_ui_url)
 
             self.user = auth.authenticate(**kwargs)
 
