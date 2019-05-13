@@ -33,7 +33,7 @@ class OIDCAuthenticationCallbackView(View):
 
     @property
     def failure_url(self):
-        return import_from_settings('LOGIN_REDIRECT_URL_FAILURE', '/')
+        return import_from_settings('PORTAL_UI_URL', '/')
 
     @property
     def success_url(self):

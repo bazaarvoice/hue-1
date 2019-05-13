@@ -4,6 +4,7 @@ import json
 import logging
 import requests
 
+from django.http import HttpResponseRedirect
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 from django.core.exceptions import SuspiciousOperation, ImproperlyConfigured
@@ -175,8 +176,8 @@ class OIDCAuthenticationBackend(ModelBackend):
         token_nonce = verified_id.get('nonce')
 
         if import_from_settings('OIDC_USE_NONCE', True) and nonce != token_nonce:
-            msg = 'JWT Nonce verification failed.'
-            raise SuspiciousOperation(msg)
+            portal_ui_url = import_from_settings('PORTAL_UI_URL', '/')
+            return HttpResponseRedirect(portal_ui_url)
         return verified_id
 
     def get_token(self, payload):
