@@ -35,7 +35,10 @@ from desktop.views import _ko
           <i class="inline-autocomplete-magnify-icon fa fa-fw fa-spinner fa-spin"></i>
           <!-- /ko -->
         <!-- /ko-->
-        <input class="inline-autocomplete-input" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" data-bind="
+        <input class="inline-autocomplete-input"
+               readonly onfocus="this.removeAttribute('readonly');"
+               autocomplete="new-search" type="search" value=""
+               autocorrect="off" autocapitalize="off" spellcheck="false" data-bind="
           attr: { 'placeHolder' : hasFocus() ? '' : placeHolder },
           textInput: searchInput,
           hasFocus: hasFocus,
