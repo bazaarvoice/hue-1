@@ -216,13 +216,16 @@ class YarnApi(Api):
     logs = ''
     try:
       if app_type == 'MAPREDUCE' or app_type == 'Oozie Launcher':
-        if log_name == 'default':
+        if 'default' in log_name:
           response = job_single_logs(MockDjangoRequest(self.user), job=appid)
           logs = json.loads(response.content).get('logs')
           if logs and len(logs) == 4:
-            logs = "======== STDOUT ========\n\n {stdout} \n" \
-                   "======== STDERR ========\n\n {stderr} \n" \
-                   "======== SYSLOG ========\n\n {syslog}".format(stdout=logs[1], stderr=logs[2], syslog=logs[3])
+            if 'syslog' in log_name:
+              logs = "{syslog}".format(syslog=logs[3])
+            elif 'stderr' in log_name:
+              logs = "{stderr}".format(stderr=logs[2])
+            else: # default to stdout
+              logs = "{stdout}".format(stdout=logs[1])
         else:
           response = job_attempt_logs_json(MockDjangoRequest(self.user), job=appid, name=log_name, is_embeddable=is_embeddable)
           logs = json.loads(response.content).get('log')
