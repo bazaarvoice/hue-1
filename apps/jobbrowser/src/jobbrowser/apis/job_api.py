@@ -250,6 +250,13 @@ class YarnApi(Api):
         return NativeYarnApi(self.user).get_job(jobid=appid).full_job_conf
       elif app_property == 'counters':
         return NativeYarnApi(self.user).get_job(jobid=appid).counters
+      elif app_property == 'tezdag':
+        tez_am_dag_id = "%s_%04d" % (appid[:-5], int(appid.split('_')[2]) + 1)
+        return {
+          'dag_id': tez_am_dag_id,
+          'url': "http://localhost:8000/#/app/%s/dags" % tez_am_dag_id,
+          'status': NativeYarnApi(self.user).get_job(jobid=tez_am_dag_id).status
+        }
     elif app_type == 'SPARK':
       if app_property == 'executors':
         return {

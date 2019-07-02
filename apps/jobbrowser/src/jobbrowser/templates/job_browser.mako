@@ -632,6 +632,7 @@ ${ commonheader("Job Browser", "jobbrowser", user, request) | n,unicode }
         <li><a href="#job-mapreduce-page-tasks${ SUFFIX }" data-bind="click: function(){ fetchProfile('tasks'); $('a[href=\'#job-mapreduce-page-tasks${ SUFFIX }\']').tab('show'); }">${ _('Tasks') }</a></li>
         <li><a href="#job-mapreduce-page-metadata${ SUFFIX }" data-bind="click: function(){ fetchProfile('metadata'); $('a[href=\'#job-mapreduce-page-metadata${ SUFFIX }\']').tab('show'); }">${ _('Metadata') }</a></li>
         <li><a href="#job-mapreduce-page-counters${ SUFFIX }" data-bind="click: function(){ fetchProfile('counters'); $('a[href=\'#job-mapreduce-page-counters${ SUFFIX }\']').tab('show'); }">${ _('Counters') }</a></li>
+        <li><a href="#job-tez-dag-ui${ SUFFIX }" data-bind="click: function(){ fetchProfile('tezdag'); $('a[href=\'#job-tez-dag-ui${ SUFFIX }\']').tab('show'); }">${ _('Tez DAG') }</a></li>
         <li class="pull-right" data-bind="template: { name: 'job-actions${ SUFFIX }' }"></li>
       </ul>
 
@@ -704,11 +705,33 @@ ${ commonheader("Job Browser", "jobbrowser", user, request) | n,unicode }
         <div class="tab-pane" id="job-mapreduce-page-counters${ SUFFIX }">
           <div data-bind="template: { name: 'render-page-counters${ SUFFIX }', data: properties['counters'] }"></div>
         </div>
+
+        <div class="tab-pane" id="job-tez-dag-ui${ SUFFIX }">
+          <div data-bind="template: { name: 'render-tez-dag-ui${ SUFFIX }', data: properties['tezdag'] }"></div>
+        </div>
       </div>
     </div>
   </div>
 </script>
 
+<script type="text/html" id="render-tez-dag-ui${ SUFFIX }">
+##   <!-- ko hueSpinner: { spin: !$data, center: true, size: 'small' } --><!-- /ko -->
+
+##   <!-- ko if: $data -->
+##       <!-- ko ifnot: $data.status -->
+##       <span class="muted">${ _('There are currently no Tez DAG to be displayed.') }</span>
+##       <!-- /ko -->
+
+##       <!-- ko if: $data.status -->
+##       <div class="row-fluid">
+##           <div data-bind="text: data.url"></div>
+##           <div data-bind="text: data.dag_id"></div>
+##           <div data-bind="text: data.status"></div>
+##         <iframe src="$data.url" scrolling="auto" id="tez-ui-frame" style="width: 100%; height: 100vh; border-width: 0px; margin: auto; display: block;"></iframe>
+##       </div>
+##       <!-- /ko -->
+##   <!-- /ko -->
+</script>
 
 <script type="text/html" id="job-mapreduce-task-page${ SUFFIX }">
   <div class="row-fluid">
