@@ -715,22 +715,22 @@ ${ commonheader("Job Browser", "jobbrowser", user, request) | n,unicode }
 </script>
 
 <script type="text/html" id="render-tez-dag-ui${ SUFFIX }">
-##   <!-- ko hueSpinner: { spin: !$data, center: true, size: 'small' } --><!-- /ko -->
+  <!-- ko hueSpinner: { spin: !$data, center: true, size: 'small' } --><!-- /ko -->
 
-##   <!-- ko if: $data -->
-##       <!-- ko ifnot: $data.status -->
-##       <span class="muted">${ _('There are currently no Tez DAG to be displayed.') }</span>
-##       <!-- /ko -->
+  <!-- ko if: $data -->
+      <!-- ko ifnot: $data.status -->
+      <span class="muted">${ _('There are currently no Tez DAG to be displayed.') }</span>
+      <!-- /ko -->
 
-##       <!-- ko if: $data.status -->
-##       <div class="row-fluid">
-##           <div data-bind="text: data.url"></div>
-##           <div data-bind="text: data.dag_id"></div>
-##           <div data-bind="text: data.status"></div>
-##         <iframe src="$data.url" scrolling="auto" id="tez-ui-frame" style="width: 100%; height: 100vh; border-width: 0px; margin: auto; display: block;"></iframe>
-##       </div>
-##       <!-- /ko -->
-##   <!-- /ko -->
+      <!-- ko if: $data.status -->
+      <div class="row-fluid">
+          <div data-bind="text: data.url"></div>
+          <div data-bind="text: data.dag_id"></div>
+          <div data-bind="text: data.status"></div>
+        <iframe src="$data.url" scrolling="auto" id="tez-ui-frame" style="width: 100%; height: 100vh; border-width: 0px; margin: auto; display: block;"></iframe>
+      </div>
+      <!-- /ko -->
+  <!-- /ko -->
 </script>
 
 <script type="text/html" id="job-mapreduce-task-page${ SUFFIX }">

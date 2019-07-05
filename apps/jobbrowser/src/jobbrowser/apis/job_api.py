@@ -251,10 +251,11 @@ class YarnApi(Api):
       elif app_property == 'counters':
         return NativeYarnApi(self.user).get_job(jobid=appid).counters
       elif app_property == 'tezdag':
-        tez_am_dag_id = "%s_%04d" % (appid[:-5], int(appid.split('_')[2]) + 1)
+        tez_am_dag_id = "application_%s_%04d" % (appid.split('_')[1], int(appid.split('_')[2]) + 1)
+        LOG.info('appid %s -> tezamid %s' % (appid, tez_am_dag_id))
         return {
           'dag_id': tez_am_dag_id,
-          'url': "http://localhost:8000/#/app/%s/dags" % tez_am_dag_id,
+          'url': "http://10.8.101.245:8001/tezui/#/app/%s/dags" % tez_am_dag_id,
           'status': NativeYarnApi(self.user).get_job(jobid=tez_am_dag_id).status
         }
     elif app_type == 'SPARK':
