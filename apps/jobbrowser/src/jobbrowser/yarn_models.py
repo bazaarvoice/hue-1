@@ -336,6 +336,34 @@ class Job(object):
       self._job_attempts = self.api.job_attempts(self.id)['jobAttempts']
     return self._job_attempts
 
+class TezJob(Job):
+  def __init__(self, api, attrs):
+
+    if 'finishedTime' in attrs:
+      attrs['finishTime'] = attrs['finishedTime'];
+    if 'startedTime' in attrs:
+      attrs['startTime'] = attrs['startedTime'];
+
+    attrs['mapsCompleted'] = 0;
+    attrs['reducesCompleted'] = 0;
+
+    super(TezJob, self).__init__(api, attrs)
+
+  @property
+  def counters(self):
+    return {}
+
+  @property
+  def full_job_conf(self):
+    return {'property': []}
+
+  def filter_tasks(self, task_types=None, task_states=None, task_text=None):
+    return []
+
+  @property
+  def job_attempts(self):
+    return {'jobAttempt': []}
+
 class OozieYarnJob(Job):
   def __init__(self, api, attrs):
     self.api = api

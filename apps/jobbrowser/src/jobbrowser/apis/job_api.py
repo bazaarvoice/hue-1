@@ -176,7 +176,12 @@ class YarnApi(Api):
           'diagnostics': app['diagnostics'] if app['diagnostics'] else '',
           'tasks': [],
           'metadata': [],
-          'counters': []
+          'counters': [],
+          'tezdag': []
+      }
+    elif app['applicationType'] == 'TEZ':
+      common['properties'] = {
+        'tezdag': []
       }
     elif app['applicationType'] == 'SPARK':
       app['logs'] = job.logs_url if hasattr(job, 'logs_url') else ''
