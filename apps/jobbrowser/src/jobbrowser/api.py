@@ -92,6 +92,8 @@ class YarnApi(JobBrowserApi):
       filters['limit'] = kwargs['limit']
     if kwargs.get('time_value'):
       filters['startedTimeBegin'] = self._get_started_time_begin(kwargs.get('time_value'), kwargs.get('time_unit'))
+    if kwargs.get('startedTimeBegin'):
+      filters['startedTimeBegin'] = kwargs['startedTimeBegin']
 
     json = self.resource_manager_api.apps(**filters)
     if type(json) == str and 'This is standby RM' in json:
@@ -169,6 +171,8 @@ class YarnApi(JobBrowserApi):
           job = YarnJob(self.mapreduce_api, resp['job'])
         elif app['state'] in ('NEW', 'SUBMITTED', 'RUNNING') and app['applicationType'] == 'SPARK':
           job = SparkJob(app, rm_api=self.resource_manager_api, hs_api=self.spark_history_server_api)
+        elif app['applicationType'] == 'TEZ':
+          job = TezJob(self.resource_manager_api, app)
         else:
           job = Application(app, self.resource_manager_api)
     except RestException, e:

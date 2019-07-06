@@ -24,7 +24,7 @@ from hadoop.yarn import resource_manager_api
 
 from desktop.lib.exceptions import MessageException
 from desktop.lib.exceptions_renderable import PopupException
-from jobbrowser.conf import MAX_JOB_FETCH, LOG_OFFSET
+from jobbrowser.conf import MAX_JOB_FETCH, LOG_OFFSET, TEZ_UI_URL
 from jobbrowser.views import job_executor_logs, job_single_logs
 
 
@@ -256,11 +256,49 @@ class YarnApi(Api):
       elif app_property == 'counters':
         return NativeYarnApi(self.user).get_job(jobid=appid).counters
       elif app_property == 'tezdag':
-        tez_am_dag_id = "application_%s_%04d" % (appid.split('_')[1], int(appid.split('_')[2]) + 1)
+        yarnapi = NativeYarnApi(self.user)
+        app = yarnapi.get_application(appid)
+
+        if app['applicationType'] == 'TEZ':
+          tez_am_dag_id = appid
+        else:
+         # by default we increment the current app id to get the AM
+         tez_am_dag_id = "application_%s_%04d" % (appid.split('_')[1], int(appid.split('_')[2]) + 1)
+
+         # Find the default-stderr log of the current app to get to the Hive query ID
+         hivelog = self.logs(appid=appid, app_type=app_type, log_name='default-stderr')
+
+         if hivelog and 'logs' in hivelog:
+           import re
+           query_ids = re.findall(".*command\(queryId=(.*)\):.*", hivelog['logs'], re.MULTILINE)
+           if query_ids:
+             LOG.info('Found %d existing query ids for AM appid=%s' % (len(query_ids), appid))
+
+         queue = app['queue'] or 'default'
+         filter_params = {
+           'user': self.user,
+           'username': queue,
+           'text': '',
+           'state': 'all',
+           'startedTimeBegin': app['startedTime']
+         }
+
+         filter_params['limit'] = 10
+
+         recent_apps = yarnapi.get_jobs(**filter_params)
+
+         for tezam in recent_apps:
+           current_query_id = tezam.applicationTags.split(',')[0]
+           if query_ids and current_query_id in query_ids:
+             tez_am_dag_id = tezam.jobId
+             LOG.info('Found Tez AM ID according to query history and applicationTags=%s' % tezam.applicationTags)
+             break
+
         LOG.info('appid %s -> tezamid %s' % (appid, tez_am_dag_id))
+        tez_ui_base = TEZ_UI_URL.get()
         return {
           'dag_id': tez_am_dag_id,
-          'url': "http://10.8.101.245:8001/tezui/#/app/%s/dags" % tez_am_dag_id,
+          'url': "%s/#/app/%s/dags" % (tez_ui_base, tez_am_dag_id),
           'status': NativeYarnApi(self.user).get_job(jobid=tez_am_dag_id).status
         }
     elif app_type == 'SPARK':

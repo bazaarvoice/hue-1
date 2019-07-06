@@ -715,14 +715,16 @@ ${ commonheader("Job Browser", "jobbrowser", user, request) | n,unicode }
 </script>
 
 <script type="text/html" id="render-page-tezdag${ SUFFIX }">
+  <!-- ko hueSpinner: { spin: !$data.status, center: true, size: 'large' } --><!-- /ko -->
+
   <!-- ko ifnot: $data -->
-  <span>Loading data ... </span>
+  <span class="muted">${ _('There are currently no Tez DAG to be displayed.') }</span>
   <!-- /ko -->
 
   <!-- ko if: $data -->
 
   <!-- ko ifnot: $data.status -->
-  <span class="muted">${ _('There are currently no Tez DAG to be displayed.') }</span>
+  <span class="muted">Loading data ... </span>
   <!-- /ko -->
 
   <!-- ko if: $data.status -->
