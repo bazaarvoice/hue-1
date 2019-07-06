@@ -33,7 +33,7 @@ import hadoop.yarn.resource_manager_api as resource_manager_api
 import hadoop.yarn.spark_history_server_api as spark_history_server_api
 
 from jobbrowser.conf import SHARE_JOBS
-from jobbrowser.yarn_models import Application, OozieYarnJob, Job as YarnJob, KilledJob as KilledYarnJob, Container, SparkJob
+from jobbrowser.yarn_models import Application, TezJob, OozieYarnJob, Job as YarnJob, KilledJob as KilledYarnJob, Container, SparkJob
 from desktop.auth.backend import is_admin
 
 
@@ -92,6 +92,8 @@ class YarnApi(JobBrowserApi):
       filters['limit'] = kwargs['limit']
     if kwargs.get('time_value'):
       filters['startedTimeBegin'] = self._get_started_time_begin(kwargs.get('time_value'), kwargs.get('time_unit'))
+    if kwargs.get('startedTimeBegin'):
+      filters['startedTimeBegin'] = kwargs['startedTimeBegin']
 
     json = self.resource_manager_api.apps(**filters)
     if type(json) == str and 'This is standby RM' in json:
@@ -152,6 +154,8 @@ class YarnApi(JobBrowserApi):
           job = KilledYarnJob(self.resource_manager_api, app)
         elif app['applicationType'] == 'Oozie Launcher':
           job = OozieYarnJob(self.resource_manager_api, app)
+        elif app['applicationType'] == 'TEZ':
+          job = TezJob(self.resource_manager_api, app)
         else:  # Job succeeded, attempt to fetch from JHS
           job = self._get_job_from_history_server(job_id)
       else:
@@ -167,6 +171,8 @@ class YarnApi(JobBrowserApi):
           job = YarnJob(self.mapreduce_api, resp['job'])
         elif app['state'] in ('NEW', 'SUBMITTED', 'RUNNING') and app['applicationType'] == 'SPARK':
           job = SparkJob(app, rm_api=self.resource_manager_api, hs_api=self.spark_history_server_api)
+        elif app['applicationType'] == 'TEZ':
+          job = TezJob(self.resource_manager_api, app)
         else:
           job = Application(app, self.resource_manager_api)
     except RestException, e:

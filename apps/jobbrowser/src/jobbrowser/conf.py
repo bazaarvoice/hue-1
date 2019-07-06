@@ -59,3 +59,9 @@ ENABLE_QUERY_BROWSER = Config(
     type=coerce_bool,
     default=True
 )
+
+TEZ_UI_URL=Config(
+    key="tez_ui_url",
+    default='http://localhost:8888/tezui',
+    help="URL of the Tez UI. Should be on the same domain for loading in an Iframe."
+)

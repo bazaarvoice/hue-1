@@ -89,8 +89,8 @@ class OozieApi(object):
 
     return defaults
 
-  VALID_JOB_FILTERS = ('name', 'user', 'group', 'status', 'startcreatedtime', 'text')
-  VALID_LOG_FILTERS = set(('recent', 'limit', 'loglevel', 'text'))
+  VALID_JOB_FILTERS = ('name', 'user', 'group', 'status', 'startcreatedtime')
+  VALID_LOG_FILTERS = set(('recent', 'limit', 'loglevel'))
 
   def get_jobs(self, jobtype, offset=None, cnt=None, filters=None):
     """
@@ -111,8 +111,9 @@ class OozieApi(object):
     filter_list = []
     for key, val in filters:
       if key not in OozieApi.VALID_JOB_FILTERS:
-        raise ValueError('"%s" is not a valid filter for selecting jobs' % (key,))
-      filter_list.append('%s=%s' % (key, val))
+        continue
+      else:
+        filter_list.append('%s=%s' % (key, val))
     params['filter'] = ';'.join(filter_list)
 
     # Send the request
