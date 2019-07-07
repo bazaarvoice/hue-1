@@ -31,6 +31,7 @@ import hadoop.yarn.mapreduce_api as mapreduce_api
 import hadoop.yarn.node_manager_api as node_manager_api
 import hadoop.yarn.resource_manager_api as resource_manager_api
 import hadoop.yarn.spark_history_server_api as spark_history_server_api
+import hadoop.yarn.timeline_api as timeline_api
 
 from jobbrowser.conf import SHARE_JOBS
 from jobbrowser.yarn_models import Application, TezJob, OozieYarnJob, Job as YarnJob, KilledJob as KilledYarnJob, Container, SparkJob
@@ -71,10 +72,28 @@ class YarnApi(JobBrowserApi):
     self.resource_manager_api = resource_manager_api.get_resource_manager(user.username)
     self.mapreduce_api = mapreduce_api.get_mapreduce_api(user.username)
     self.history_server_api = history_server_api.get_history_server_api(user.username)
+    self.timeline_api = timeline_api.get_timeline_server(user.username)
     self.spark_history_server_api = spark_history_server_api.get_history_server_api()  # Spark HS does not support setuser
 
   def get_job_link(self, job_id):
     return self.get_job(job_id)
+
+  def get_tezdag_by_caller_id(self, caller_id):
+    params = {'limit': 1, 'primary_filter': 'callerId:"%s"' % caller_id}
+    json = self.timeline_api.timeline('TEZ_DAG_ID', **params)
+
+    if json['entities'] and len(json['entities']) > 0:
+      info = json['entities'][0]['otherinfo']
+      return {
+        'application_id': info['applicationId'],
+        'status': info['status'],
+        'start_time': info['startTime'],
+        'queue': info['queueName'],
+        'caller_id': info['callerId'],
+        'usser': info['user'],
+      }
+    else:
+      return None
 
   @rm_ha
   def get_jobs(self, user, **kwargs):
