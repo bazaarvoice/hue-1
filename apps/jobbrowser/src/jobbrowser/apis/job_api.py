@@ -258,6 +258,7 @@ class YarnApi(Api):
       elif app_property == 'tezdag':
         yarnapi = NativeYarnApi(self.user)
         app = yarnapi.get_application(appid)
+        tez_ui_base = TEZ_UI_URL.get()
 
         if app['applicationType'] == 'TEZ':
           tez_am_dag_id = appid
@@ -270,10 +271,24 @@ class YarnApi(Api):
 
          if hivelog and 'logs' in hivelog:
            import re
-           query_ids = re.findall(".*command\(queryId=(.*)\):.*", hivelog['logs'], re.MULTILINE)
+           query_ids = set(re.findall(".*command\(queryId=(.*)\):.*", hivelog['logs'], re.MULTILINE))
            if query_ids:
              LOG.info('Found %d existing query ids for AM appid=%s' % (len(query_ids), appid))
 
+         # try to find Tez DAG AM using Timeline Server API
+         for query_id in query_ids:
+           am_found = yarnapi.get_tezdag_by_caller_id(query_id)
+           if am_found:
+             LOG.info('Found Tez AM ID according to query history and Timeline Server API result=%s' % am_found)
+             tez_am_dag_id = am_found['application_id']
+             LOG.info('appid %s -> tezamid %s' % (appid, tez_am_dag_id))
+             return {
+               'dag_id': tez_am_dag_id,
+               'url': "%s/#/app/%s/dags" % (tez_ui_base, tez_am_dag_id),
+               'status': NativeYarnApi(self.user).get_job(jobid=tez_am_dag_id).status
+             }
+
+         # try to find Tez DAG AM by listing existing AM containers via ResourceManager
          queue = app['queue'] or 'default'
          filter_params = {
            'user': self.user,
@@ -285,6 +300,7 @@ class YarnApi(Api):
 
          filter_params['limit'] = 10
 
+         # list all dags from Tez and find a match to the current query history
          recent_apps = yarnapi.get_jobs(**filter_params)
 
          for tezam in recent_apps:
@@ -295,7 +311,6 @@ class YarnApi(Api):
              break
 
         LOG.info('appid %s -> tezamid %s' % (appid, tez_am_dag_id))
-        tez_ui_base = TEZ_UI_URL.get()
         return {
           'dag_id': tez_am_dag_id,
           'url': "%s/#/app/%s/dags" % (tez_ui_base, tez_am_dag_id),
