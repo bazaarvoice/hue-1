@@ -79,7 +79,7 @@ class YarnApi(JobBrowserApi):
     return self.get_job(job_id)
 
   def get_tezdag_by_caller_id(self, caller_id):
-    params = {'limit': 1, 'primary_filter': 'callerId:"%s"' % caller_id}
+    params = {'limit': 1, 'primaryFilter': 'callerId:"%s"' % caller_id}
     json = self.timeline_api.timeline('TEZ_DAG_ID', **params)
 
     if json['entities'] and len(json['entities']) > 0:
