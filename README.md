@@ -3,18 +3,18 @@
 
 Building locally
 ----------------
-   * Follow the installation instructions [here](http://cloudera.github.io/hue/latest/admin-manual/manual.html#installation).
-   * Download python: 2.7.6 < Install Python Version < 3.X.Y
+   * Follow the installation instructions [here](https://docs.gethue.com/administrator/installation/dependencies/#macos).
    
 ```
-export LDFLAGS=-L/usr/local/opt/openssl/lib
+export LDFLAGS='-L/usr/local/opt/openssl/lib -L/usr/local/opt/gmp/lib'
 xcode_sdk_path="$(xcrun --show-sdk-path -f)"
-CPPFLAGS='-I'"$xcode_sdk_path"'/usr/include/sasl -I/usr/local/opt/openssl/include' make apps SKIP_PYTHONDEV_CHECK=1
+export CPPFLAGS='-I/usr/local/opt/openssl/include -I/usr/local/include -I'"$xcode_sdk_path"'/usr/include/sasl'
+make apps SKIP_PYTHONDEV_CHECK=1
 ```
 
 Helpful tips:
    *  `make clean apps` is your friend
-   *  There may be an error w/ SSL certifcate handling in the build; if so, the 'apparent' problem may be the MacOS version. Last successful build has been on MacOSX High Sierra.
+   *  There may be an error w/ SSL certifcate handling in the build; if so, the 'apparent' problem may be the MacOS version. Successful builds have been based on MacOSX High Sierra and Catalina.
 
 
 Query. Explore. Repeat.
@@ -24,10 +24,10 @@ Hue is an open source Analytic Workbench for browsing, querying and visualizing 
 
 It features:
 
-   * [Editors](http://gethue.com/sql-editor/) to query with SQL and submit jobs.
-   * [Dashboards](http://gethue.com/search-dashboards/) to dynamically interact and visualize data.
-   * [Scheduler](http://gethue.com/scheduling/) of jobs and workflows.
-   * [Browsers](http://gethue.com/browsers/) for data and a Data Catalog.
+   * [Editors](https://gethue.com/new-sql-editor/) to query with SQL and submit jobs.
+   * [Dashboards](https://gethue.com/improved-dashboard-layout/) to dynamically interact and visualize data.
+   * [Scheduler](https://docs.gethue.com/user/scheduling/) of jobs and workflows.
+   * [Browsers](https://docs.gethue.com/user/browsing/) for data and a Data Catalog.
 
 
 ![alt text](https://raw.githubusercontent.com/cloudera/hue/master/docs/images/sql-editor.png "Hue Editor")
@@ -51,7 +51,7 @@ build/env/bin/hue runserver
 ```
 Now Hue should be running on [http://localhost:8000](http://localhost:8000) ! The configuration in development mode is ``desktop/conf/pseudo-distributed.ini``.
 
-Read more in the [installation documentation](http://cloudera.github.io/hue/latest/admin-manual/manual.html#installation).
+Read more in the [installation documentation](https://docs.gethue.com/administrator/installation/).
 
 
 Docker
